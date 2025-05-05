@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Choose Your Plan</title>
+    <style>
+        .plans-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        .plan-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+        }
+        .plan-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .plan-price {
+            font-size: 36px;
+            color: #3399cc;
+            margin: 20px 0;
+        }
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .plan-features li {
+            margin: 10px 0;
+        }
+        .select-plan-btn {
+            background-color: #3399cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .select-plan-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="plans-container">
+        <div class="plan-card">
+            <div class="plan-name">Basic</div>
+            <div class="plan-price">₹10</div>
+            <ul class="plan-features">
+                <li>Basic Features</li>
+                <li>Email Support</li>
+                <li>1GB Storage</li>
+            </ul>
+            <form method="POST" action="{% url 'create_payment' %}">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="10">
+                <input type="hidden" name="plan" value="basic">
+                <button type="submit" class="select-plan-btn">Select Plan</button>
+            </form>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-name">Advanced</div>
+            <div class="plan-price">₹20</div>
+            <ul class="plan-features">
+                <li>Advanced Features</li>
+                <li>Priority Support</li>
+                <li>5GB Storage</li>
+            </ul>
+            <form method="POST" action="{% url 'create_payment' %}">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="20">
+                <input type="hidden" name="plan" value="advanced">
+                <button type="submit" class="select-plan-btn">Select Plan</button>
+            </form>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-name">Business</div>
+            <div class="plan-price">₹50</div>
+            <ul class="plan-features">
+                <li>All Features</li>
+                <li>24/7 Support</li>
+                <li>Unlimited Storage</li>
+            </ul>
+            <form method="POST" action="{% url 'create_payment' %}">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="50">
+                <input type="hidden" name="plan" value="business">
+                <button type="submit" class="select-plan-btn">Select Plan</button>
+            </form>
+        </div>
+    </div>
+
+    {% if order_id %}
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="rzp-button" class="select-plan-btn">Pay Now</button>
+    </div>
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            key: "{{ key_id }}",
+            amount: "{{ amount }}",
+            currency: "INR",
+            order_id: "{{ order_id }}",
+            handler: function(response) {
+                window.location.href = '/payment-success/';
+            },
+            theme: {
+                color: "#3399cc"
+            }
+        };
+        
+        var rzp = new Razorpay(options);
+        document.getElementById('rzp-button').onclick = function(e) {
+            rzp.open();
+            e.preventDefault();
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

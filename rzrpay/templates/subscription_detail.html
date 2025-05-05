@@ -1,0 +1,69 @@
+<!-- templates/rzrpay/subscription_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Subscription Details</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="p-5">
+  <div class="container">
+    <h1>Subscription {{ subscription.razorpay_subscription_id }}</h1>
+    <p><strong>Plan:</strong> {{ subscription.plan.name }}</p>
+    <p><strong>Status:</strong> {{ subscription.status }}</p>
+    <p><strong>Plan Start:</strong> {{ subscription.current_start }}</p>
+    <p><strong>Plan End:</strong> {{ subscription.current_end }}</p>
+
+    {% if subscription.status == 'created' %}
+    <!-- Pay button to launch Razorpay Checkout -->
+    <button id="rzp-button1" class="btn btn-primary">Pay Now</button>
+    <!-- Razorpay Checkout script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      console.log("Key:", "{{ KEY_ID }}");
+      console.log("Subscription ID:", "{{ subscription.razorpay_subscription_id }}");
+      var options = {
+        "key": "{{ KEY_ID }}",  // from settings
+        "subscription_id": "{{ subscription.razorpay_subscription_id }}",
+        "currency": "INR",
+        "name": "{{ subscription.plan.name }}",
+        "description": "{{ subscription.plan.description }}",
+        "prefill": {
+          "name": "{{ subscription.customer.name }}",
+          "email": "{{ subscription.customer.email }}",
+          "contact": "{{ subscription.customer.contact }}"
+        },
+        "theme": { "color": "#528FF0" },
+       
+        "handler": function (response){
+        // success callback
+        alert(response.razorpay_payment_id);
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      document.getElementById('rzp-button1').onclick = function(e) {
+        rzp1.open();
+        // e.preventDefault();
+      }
+    </script>
+    {% endif %}
+
+    <h3 class="mt-4">Payments</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>ID</th><th>Amount</th><th>Status</th><th>Time</th></tr></thead>
+      <tbody>
+      {% for pay in subscription.payments.all %}
+        <tr>
+          <td>{{ pay.razorpay_payment_id }}</td>
+          <td>{{ pay.amount|floatformat:2 }} {{ pay.currency }}</td>
+          <td>{{ pay.status }}</td>
+          <td>{{ pay.created_at }}</td>
+        
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">No payments yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

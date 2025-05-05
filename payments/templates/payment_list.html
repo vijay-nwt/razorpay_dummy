@@ -1,0 +1,48 @@
+<!-- Bootstrap 5 CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Payment History</h2>
+        <a href="{% url 'create_payment' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Payment
+        </a>
+        <a href="{% url 'plan_list' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Subscription Plan
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Amount (₹)</th>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.id }}</td>
+                    <td>₹{{ payment.amount|floatformat:2 }}</td>
+                    <td>{{ payment.get_plan_display }}</td>
+                    <td>
+                        <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                            {{ payment.status }}
+                        </span>
+                    </td>
+                    <td>{{ payment.created_at|date:"d M Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No payments found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plans</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="p-5">
+  <div class="container">
+    <h1>Available Plans</h1>
+    <table class="table table-bordered">
+      <thead><tr><th>Name</th><th>Interval</th><th>Price</th><th></th></tr></thead>
+      <tbody>
+        {% for plan in plans %}
+        <tr>
+          <td>{{ plan.name }}</td>
+          <td>{{ plan.interval_count }} × {{ plan.interval }}</td>
+          <td>{{ plan.amount|floatformat:2 }} {{ plan.currency }}</td>
+          <td><a href="{% url 'subscribe' plan.id %}" class="btn btn-primary">Subscribe</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
